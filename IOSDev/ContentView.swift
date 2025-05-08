@@ -16,6 +16,11 @@ struct ContentView: View {
                     Label("My Bookings", systemImage: "calendar")
                 }
             
+            NewBookingView()
+                .tabItem {
+                    Label("New Booking", systemImage: "plus.circle")
+                }
+            
             CarsNearMeView()
                 .tabItem {
                     Label("Cars Near Me", systemImage: "car.fill")
@@ -34,6 +39,40 @@ struct MyBookingsView: View {
         NavigationView {
             Text("Your future bookings will appear here")
                 .navigationTitle(Text("My Car Bookings"))
+        }
+    }
+}
+
+struct NewBookingView: View {
+    @State private var pickupDate = Date()
+    @State private var returnDate = Date().addingTimeInterval(86400)
+    @State private var selectedCarType = "Sedan"
+    let carTypes = ["Sedan", "SUV", "Hatchback"]
+
+    var body: some View {
+        NavigationView {
+            Form {
+                Section(header: Text("Dates")) {
+                    DatePicker("Pick-up Date", selection: $pickupDate, displayedComponents: .date)
+                    DatePicker("Return Date", selection: $returnDate, displayedComponents: .date)
+                }
+
+                Section(header: Text("Car Type")) {
+                    Picker("Select Car Type", selection: $selectedCarType) {
+                        ForEach(carTypes, id: \.self) { type in
+                            Text(type)
+                        }
+                    }
+                    .pickerStyle(MenuPickerStyle())
+                }
+
+                Section {
+                    Button("Confirm Booking") {
+                        print("Booking confirmed: \(selectedCarType) from \(pickupDate) to \(returnDate)")
+                    }
+                }
+            }
+            .navigationTitle("New Booking")
         }
     }
 }
