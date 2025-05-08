@@ -67,9 +67,7 @@ struct NewBookingView: View {
                 }
 
                 Section {
-                    Button("Confirm Booking") {
-                        print("Booking confirmed: \(selectedCarType) from \(pickupDate) to \(returnDate)")
-                    }
+                    Button("Confirm Booking") {}
                 }
             }
             .navigationTitle("New Booking")
