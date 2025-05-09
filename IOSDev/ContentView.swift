@@ -139,6 +139,7 @@ struct CarsNearMeView: View {
             .sheet(item: $selectedVehicle) { vehicle in
                 NewBookingView(vehicle: vehicle) { booking in
                     bookingStore.addBooking(booking)
+                }
             }
         }
     }
