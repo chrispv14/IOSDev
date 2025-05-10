@@ -3,32 +3,62 @@
 ## 🎯 Overview
 This iOS application was developed as part of our university group project for the subject **42889 / 41889 – Application Development** at UTS. The goal was to design and implement a functional app that solves a real-world problem using the **Product Design Cycle**, with iterative prototyping, development, and testing.
 
+The concept is a **student-friendly car rental app**, allowing users to easily find and book nearby vehicles with a clean, intuitive UI and efficient time-slot management. All data is stored locally using `UserDefaults` and `.json` files.
+
 ## 👥 Team
 This project was completed by a group of 3 students under the **Faculty of Engineering and IT, School of Computer Science**.
 
 ## 🛠 Features
-- Built entirely in **Swift** using **Xcode**.
-- Fully functional iOS app designed around a real-world use case.
-- UI optimized for ease of use and visual appeal.
+- Built entirely in **Swift** using **Xcode** and **SwiftUI**.
+- **User registration and login** system with duplicate email/license prevention.
+- **Booking system with 30-minute time slots**, including price calculation.
+- **Per-user bookings** stored locally in `.json` files.
+- Interactive **Map view** for finding nearby cars.
+- **Image-based listings** for better UX and recognizability.
+- **Authentication gating** (e.g., bookings only when logged in).
+- Modern UI with segmented views, forms, modals, and error handling.
+- Optimized for both code readability and user experience.
 - Includes unit tests and UI tests via `IOSDevTests` and `IOSDevUITests`.
 
-## 📦 Structure
+## 📂 Project Structure
+
 ```text
 IOSDev/
-├── IOSDev.xcodeproj       # Project file
-├── IOSDev/                # App source code
-├── IOSDevTests/           # Unit tests
-├── IOSDevUITests/         # UI tests
-└── README.md              # This file
+├── Assets.xcassets/ # Car images and UI assets
+├── Models/ # Data models (Booking, Vehicle, User)
+│ ├── Booking.swift
+│ ├── Vehicle.swift
+│ └── User.swift
+├── ViewModels/ # Observable stores for bookings and users
+│ ├── BookingStore.swift
+│ └── UserStore.swift
+├── Views/ # All SwiftUI views
+│ ├── AuthModalView.swift
+│ ├── CarsNearMeView.swift
+│ ├── ContentView.swift
+│ ├── DateTimePickerSheet.swift
+│ ├── MapView.swift
+│ ├── MyBookingsView.swift
+│ ├── NewBookingView.swift
+│ ├── RegisterView.swift
+│ └── SettingsView.swift
+├── IOSDevApp/ 
+├── IOSDevTests/
+├── IOSDevUITests/ 
+└── README.md # This file
 
 ```
-## 🔁 Development Cycle
-This app was developed using an iterative design approach:
+## 🔁 Development Process
+This app was developed following an Agile & iterative workflow:
 1. **Planning & Ideation**
-2. **Wireframing and Mockups**
-3. **Prototyping**
-4. **Implementation**
-5. **User Testing & Refinement**
+2. **Wireframing and Task Allocation**
+3. **Implementation with Incremental Testing**
+4. **User Feedback and Iteration**
+5. **Final Polish & Submission**
+
+## 📦 Data Handling
+- Users and bookings are persisted using `Codable` and saved as local `.json` files in the app's document directory.
+- Current session is tracked via `AppStorage` (`isLoggedIn`, `currentUserEmail`).
 
 ## 🧪 Final Submission
 The project will be presented in Week 12 during the lab session. A ZIP of the final project folder and this GitHub link are both included in the submission to Canvas.
