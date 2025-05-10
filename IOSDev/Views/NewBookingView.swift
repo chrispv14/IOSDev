@@ -1,3 +1,11 @@
+//
+//  NewBookingView.swift
+//  IOSDev
+//
+//  Created by Chris Patrik Balquiedra Veneracion on 10/5/2025.
+//
+
+
 import SwiftUI
 
 struct NewBookingView: View {
