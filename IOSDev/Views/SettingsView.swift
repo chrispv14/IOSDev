@@ -1,21 +1,30 @@
-//
-//  SettingsView.swift
-//  IOSDev
-//
-//  Created by Chris Patrik Balquiedra Veneracion on 10/5/2025.
-//
-
-
 import SwiftUI
 
 struct SettingsView: View {
     @AppStorage("username") private var username = ""
-    
+    @AppStorage("isLoggedIn") private var isLoggedIn = false
+    @AppStorage("currentUserEmail") private var currentUserEmail = ""
+
     var body: some View {
         NavigationView {
             Form {
-                Section(header: Text("User Settings")) {
-                    TextField("Username", text: $username)
+                Section(header: Text("Logged in as")) {
+                    if currentUserEmail.isEmpty {
+                        Text("Not logged in")
+                    } else {
+                        Text(currentUserEmail)
+                            .fontWeight(.medium)
+                    }
+                }
+
+              
+                Section {
+                    Button("Log Out") {
+                        isLoggedIn = false
+                        currentUserEmail = ""
+                        username = ""
+                    }
+                    .foregroundColor(.red)
                 }
             }
             .navigationTitle("Settings")

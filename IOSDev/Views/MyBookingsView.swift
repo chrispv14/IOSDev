@@ -1,16 +1,8 @@
-//
-//  MyBookingsView.swift
-//  IOSDev
-//
-//  Created by Chris Patrik Balquiedra Veneracion on 10/5/2025.
-//
-
-
 import SwiftUI
 
 struct MyBookingsView: View {
     @EnvironmentObject var bookingStore: BookingStore
-    
+
     var body: some View {
         NavigationView {
             List {
@@ -22,13 +14,9 @@ struct MyBookingsView: View {
                         Text("Return: \(booking.returnDate, style: .date)")
                     }
                 }
-                .onDelete(perform: deleteBooking)
+                .onDelete(perform: bookingStore.deleteBooking)
             }
-            .navigationTitle("My Bookings")
+            .navigationTitle(Text("My Bookings"))
         }
-    }
-    
-    private func deleteBooking(at offsets: IndexSet) {
-        bookingStore.bookings.remove(atOffsets: offsets)
     }
 }

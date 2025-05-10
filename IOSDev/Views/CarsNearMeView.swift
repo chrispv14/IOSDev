@@ -10,8 +10,9 @@ import SwiftUI
 
 struct CarsNearMeView: View {
     @EnvironmentObject var bookingStore: BookingStore
-    @State private var showMap = false
     @State private var selectedVehicle: Vehicle?
+    @State private var showLoginPrompt = false
+    @AppStorage("isLoggedIn") private var isLoggedIn = false
     
     let vehicles = [
         Vehicle(brand: "Toyota", model: "Corolla", latitude: -33.88331, longitude: 151.19951, fuelPercentage: 85),
@@ -24,27 +25,18 @@ struct CarsNearMeView: View {
     
     var body: some View {
         NavigationView {
-            VStack {
-                Picker("View Mode", selection: $showMap) {
-                    Text("List").tag(false)
-                    Text("Map").tag(true)
-                }
-                .pickerStyle(SegmentedPickerStyle())
-                .padding()
-                
-                if showMap {
-                    MapView()
-                } else {
-                    List(vehicles) { vehicle in
-                        Button {
-                            selectedVehicle = vehicle
-                        } label: {
-                            VStack(alignment: .leading) {
-                                Text("\(vehicle.brand) \(vehicle.model)")
-                                    .font(.headline)
-                                Text("Fuel: \(vehicle.fuelPercentage)%")
-                            }
-                        }
+            List(vehicles) { vehicle in
+                Button {
+                    if isLoggedIn {
+                        selectedVehicle = vehicle
+                    } else {
+                        showLoginPrompt = true
+                    }
+                } label: {
+                    VStack(alignment: .leading) {
+                        Text("\(vehicle.brand) \(vehicle.model)")
+                            .font(.headline)
+                        Text("Fuel: \(vehicle.fuelPercentage)%")
                     }
                 }
             }
@@ -53,6 +45,11 @@ struct CarsNearMeView: View {
                 NewBookingView(vehicle: vehicle) { booking in
                     bookingStore.addBooking(booking)
                 }
+            }
+            .sheet(isPresented: $showLoginPrompt) {
+                AuthModalView(onLoginSuccess: {
+                    showLoginPrompt = false
+                })
             }
         }
     }
