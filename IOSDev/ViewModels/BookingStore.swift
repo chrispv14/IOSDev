@@ -45,8 +45,13 @@ class BookingStore: ObservableObject {
         saveBookings()
     }
 
-    func deleteBooking(at offsets: IndexSet) {
-        bookings.remove(atOffsets: offsets)
+    func deleteBooking(at offsets: IndexSet, for userEmail: String) {
+        let userBookings = bookings.enumerated().filter { $0.element.userEmail == userEmail }
+        for index in offsets {
+            let actualIndex = userBookings[index].offset
+            bookings.remove(at: actualIndex)
+        }
         saveBookings()
     }
+
 }

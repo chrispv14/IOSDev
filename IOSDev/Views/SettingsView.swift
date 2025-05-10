@@ -18,14 +18,17 @@ struct SettingsView: View {
                 }
 
               
-                Section {
-                    Button("Log Out") {
-                        isLoggedIn = false
-                        currentUserEmail = ""
-                        username = ""
+                if isLoggedIn {
+                    Section {
+                        Button("Log Out") {
+                            isLoggedIn = false
+                            currentUserEmail = ""
+                            username = ""
+                        }
+                        .foregroundColor(.red)
                     }
-                    .foregroundColor(.red)
                 }
+
             }
             .navigationTitle("Settings")
         }
