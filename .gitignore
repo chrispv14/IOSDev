@@ -1,0 +1,16 @@
+# Xcode user-specific files
+*.xcuserstate
+*.xcworkspace
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+
+# Build files
+DerivedData/
+build/
+
+# SwiftPM
+.swiftpm/
+.build/
+
+# Swift Package Manager
+Package.resolved
