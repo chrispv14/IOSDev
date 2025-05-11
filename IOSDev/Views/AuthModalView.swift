@@ -15,8 +15,7 @@ struct AuthModalView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(.systemGroupedBackground)
-                    .ignoresSafeArea()
+                Color(.systemGroupedBackground).ignoresSafeArea()
 
                 VStack(spacing: 20) {
                     Spacer()
@@ -32,18 +31,20 @@ struct AuthModalView: View {
                             TextField("Email", text: $email)
                                 .keyboardType(.emailAddress)
                                 .textInputAutocapitalization(.never)
+                                .foregroundColor(.primary)
                         }
                         .padding()
-                        .background(Color.white)
+                        .background(Color(UIColor.systemBackground))
                         .cornerRadius(10)
                         .shadow(radius: 1)
 
                         HStack {
                             Image(systemName: "lock")
                             SecureField("Password", text: $password)
+                                .foregroundColor(.primary)
                         }
                         .padding()
-                        .background(Color.white)
+                        .background(Color(UIColor.systemBackground))
                         .cornerRadius(10)
                         .shadow(radius: 1)
 
@@ -66,7 +67,7 @@ struct AuthModalView: View {
                         }
                     }
                     .padding()
-                    .background(Color.white)
+                    .background(Color(UIColor.secondarySystemBackground))
                     .cornerRadius(20)
                     .padding(.horizontal)
                     .shadow(radius: 5)

@@ -15,8 +15,7 @@ struct RegisterView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(.systemGroupedBackground)
-                    .ignoresSafeArea()
+                Color(.systemGroupedBackground).ignoresSafeArea()
 
                 VStack(spacing: 20) {
                     Spacer()
@@ -31,14 +30,14 @@ struct RegisterView: View {
                             IconTextField(icon: "person", placeholder: "Username", text: $username, isSecure: false)
                             IconTextField(icon: "lock", placeholder: "Password", text: $password, isSecure: true)
                             IconTextField(icon: "doc.text", placeholder: "Licence Number", text: $licenseNumber, isSecure: false)
-                            
+
                             HStack {
                                 Image(systemName: "calendar")
                                 DatePicker("Date of Birth", selection: $dateOfBirth, displayedComponents: .date)
                                     .labelsHidden()
                             }
                             .padding()
-                            .background(Color.white)
+                            .background(Color(UIColor.systemBackground))
                             .cornerRadius(10)
                             .shadow(radius: 1)
                         }
@@ -66,7 +65,7 @@ struct RegisterView: View {
                         .cornerRadius(12)
                     }
                     .padding()
-                    .background(Color.white)
+                    .background(Color(UIColor.secondarySystemBackground))
                     .cornerRadius(20)
                     .padding(.horizontal)
                     .shadow(radius: 5)
@@ -83,6 +82,7 @@ struct RegisterView: View {
         }
     }
 }
+
 struct IconTextField: View {
     let icon: String
     let placeholder: String
@@ -92,15 +92,19 @@ struct IconTextField: View {
     var body: some View {
         HStack {
             Image(systemName: icon)
+                .foregroundColor(.primary)
+
             if isSecure {
                 SecureField(placeholder, text: $text)
+                    .foregroundColor(.primary)
             } else {
                 TextField(placeholder, text: $text)
+                    .foregroundColor(.primary)
                     .textInputAutocapitalization(.never)
             }
         }
         .padding()
-        .background(Color.white)
+        .background(Color(UIColor.systemBackground))
         .cornerRadius(10)
         .shadow(radius: 1)
     }
