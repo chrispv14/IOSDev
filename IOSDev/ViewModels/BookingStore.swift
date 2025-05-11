@@ -1,3 +1,4 @@
+// BookingStore.swift
 import Foundation
 
 class BookingStore: ObservableObject {
@@ -54,4 +55,15 @@ class BookingStore: ObservableObject {
         saveBookings()
     }
 
+    // Booking overlap detection, regardless of user
+    func isVehicleAvailable(_ vehicle: Vehicle, from start: Date, to end: Date) -> Bool {
+        for booking in bookings {
+            if booking.vehicle == vehicle {
+                if (start < booking.returnDate && end > booking.pickupDate) {
+                    return false
+                }
+            }
+        }
+        return true
+    }
 }

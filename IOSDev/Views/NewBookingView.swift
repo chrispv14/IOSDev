@@ -1,3 +1,4 @@
+// NewBookingView.swift
 import SwiftUI
 
 struct NewBookingView: View {
@@ -6,12 +7,13 @@ struct NewBookingView: View {
 
     @AppStorage("currentUserEmail") private var currentUserEmail = ""
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var bookingStore: BookingStore
 
     @State private var pickupDateOnly = Date()
     @State private var pickupTimeSlot = ""
     @State private var returnDateOnly = Calendar.current.date(byAdding: .hour, value: 1, to: Date())!
     @State private var returnTimeSlot = ""
-
+    @State private var bookingConflict = false
     @State private var showConfirmation = false
     @State private var isPickupSelectorPresented = false
     @State private var isReturnSelectorPresented = false
@@ -50,34 +52,9 @@ struct NewBookingView: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 24) {
-                    VStack(spacing: 10) {
-                        Image(vehicle.imageName)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(height: 160)
-                            .cornerRadius(10)
-                            .shadow(radius: 4)
-
-                        Text("\(vehicle.brand) \(vehicle.model)")
-                            .font(.title2)
-                            .bold()
-
-                        Text("Fuel: \(vehicle.fuelPercentage)%")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
-                    .padding()
-                    .background(Color(.systemGray6))
-                    .cornerRadius(16)
-                    .padding(.horizontal)
-
-                    dateTimeButton(title: "Pickup Date & Time", date: pickupDateOnly, time: pickupTimeSlot) {
-                        isPickupSelectorPresented = true
-                    }
-
-                    dateTimeButton(title: "Return Date & Time", date: returnDateOnly, time: returnTimeSlot) {
-                        isReturnSelectorPresented = true
-                    }
+                    vehicleCard
+                    dateTimeButton(title: "Pickup Date & Time", date: pickupDateOnly, time: pickupTimeSlot) { isPickupSelectorPresented = true }
+                    dateTimeButton(title: "Return Date & Time", date: returnDateOnly, time: returnTimeSlot) { isReturnSelectorPresented = true }
 
                     VStack(spacing: 4) {
                         Text("Duration: \(String(format: "%.1f", durationInHoursDecimal)) hour(s)")
@@ -86,14 +63,13 @@ struct NewBookingView: View {
                     }
 
                     Button {
-                        let booking = Booking(
-                            userEmail: currentUserEmail,
-                            vehicle: vehicle,
-                            pickupDate: pickupDate,
-                            returnDate: returnDate
-                        )
-                        onConfirm(booking)
-                        showConfirmation = true
+                        if bookingStore.isVehicleAvailable(vehicle, from: pickupDate, to: returnDate) {
+                            let booking = Booking(userEmail: currentUserEmail, vehicle: vehicle, pickupDate: pickupDate, returnDate: returnDate)
+                            onConfirm(booking)
+                            showConfirmation = true
+                        } else {
+                            bookingConflict = true
+                        }
                     } label: {
                         Text("Confirm Booking")
                             .font(.headline)
@@ -115,33 +91,23 @@ struct NewBookingView: View {
             } message: {
                 Text("Your booking for \(vehicle.brand) is confirmed.")
             }
-
+            .alert("Booking Conflict", isPresented: $bookingConflict) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text("This vehicle is already booked for the selected time range.")
+            }
             .sheet(isPresented: $isPickupSelectorPresented) {
                 let now = roundedNowToNextHalfHour()
                 let isToday = Calendar.current.isDate(pickupDateOnly, inSameDayAs: now)
                 let minMinutes = timeStringToMinutes(formatTime(now))
 
-                let filteredSlots = isToday
-                    ? timeSlots.filter { timeStringToMinutes($0) >= minMinutes }
-                    : timeSlots
+                let filteredSlots = isToday ? timeSlots.filter { timeStringToMinutes($0) >= minMinutes } : timeSlots
 
-                DateTimePickerSheet(
-                    title: "Select Pickup",
-                    date: $pickupDateOnly,
-                    timeSlot: $pickupTimeSlot,
-                    timeSlots: filteredSlots
-                )
+                DateTimePickerSheet(title: "Select Pickup", date: $pickupDateOnly, timeSlot: $pickupTimeSlot, timeSlots: filteredSlots)
             }
-
             .sheet(isPresented: $isReturnSelectorPresented) {
-                DateTimePickerSheet(
-                    title: "Select Return",
-                    date: $returnDateOnly,
-                    timeSlot: $returnTimeSlot,
-                    timeSlots: getValidReturnSlots()
-                )
+                DateTimePickerSheet(title: "Select Return", date: $returnDateOnly, timeSlot: $returnTimeSlot, timeSlots: getValidReturnSlots())
             }
-
             .onChange(of: pickupDate) { _ in
                 if returnDate <= pickupDate {
                     if let newReturn = Calendar.current.date(byAdding: .minute, value: 30, to: pickupDate) {
@@ -158,28 +124,28 @@ struct NewBookingView: View {
                     }
                 }
             }
-            .onChange(of: isPickupSelectorPresented) { isPresented in
-                if isPresented {
-                    let now = roundedNowToNextHalfHour()
-                    let isToday = Calendar.current.isDate(pickupDateOnly, inSameDayAs: now)
-                    let minMinutes = timeStringToMinutes(formatTime(now))
-                    let validSlots = isToday
-                        ? timeSlots.filter { timeStringToMinutes($0) >= minMinutes }
-                        : timeSlots
-                    if !validSlots.contains(pickupTimeSlot), let first = validSlots.first {
-                        pickupTimeSlot = first
-                    }
-                }
-            }
-            .onChange(of: isReturnSelectorPresented) { isPresented in
-                if isPresented {
-                    let validSlots = getValidReturnSlots()
-                    if !validSlots.contains(returnTimeSlot), let first = validSlots.first {
-                        returnTimeSlot = first
-                    }
-                }
-            }
         }
+    }
+
+    private var vehicleCard: some View {
+        VStack(spacing: 10) {
+            Image(vehicle.imageName)
+                .resizable()
+                .scaledToFit()
+                .frame(height: 160)
+                .cornerRadius(10)
+                .shadow(radius: 4)
+            Text("\(vehicle.brand) \(vehicle.model)")
+                .font(.title2)
+                .bold()
+            Text("Fuel: \(vehicle.fuelPercentage)%")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+        }
+        .padding()
+        .background(Color(.systemGray6))
+        .cornerRadius(16)
+        .padding(.horizontal)
     }
 
     private func getValidReturnSlots() -> [String] {
@@ -196,7 +162,6 @@ struct NewBookingView: View {
             Text(title)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
-
             Button(action: action) {
                 HStack {
                     Text("\(formattedDate(date)) at \(time)")
@@ -251,5 +216,3 @@ struct NewBookingView: View {
         return calendar.date(bySetting: .second, value: 0, of: date)!
     }
 }
-
-
