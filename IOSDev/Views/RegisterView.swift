@@ -12,6 +12,14 @@ struct RegisterView: View {
     @State private var showError = false
     @State private var errorMessage = ""
 
+    private var isFormValid: Bool {
+        !email.isEmpty &&
+        isValidEmail(email) &&
+        !username.isEmpty &&
+        password.count >= 6 &&
+        !licenseNumber.isEmpty
+    }
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -28,7 +36,7 @@ struct RegisterView: View {
                         Group {
                             IconTextField(icon: "envelope", placeholder: "Email", text: $email, isSecure: false)
                             IconTextField(icon: "person", placeholder: "Username", text: $username, isSecure: false)
-                            IconTextField(icon: "lock", placeholder: "Password", text: $password, isSecure: true)
+                            IconTextField(icon: "lock", placeholder: "Password (min. 6 chars)", text: $password, isSecure: true)
                             IconTextField(icon: "doc.text", placeholder: "Licence Number", text: $licenseNumber, isSecure: false)
 
                             HStack {
@@ -43,6 +51,12 @@ struct RegisterView: View {
                         }
 
                         Button("REGISTER") {
+                            guard isFormValid else {
+                                errorMessage = validationMessage()
+                                showError = true
+                                return
+                            }
+
                             let success = userStore.register(
                                 email: email,
                                 username: username,
@@ -61,8 +75,9 @@ struct RegisterView: View {
                         .frame(maxWidth: .infinity)
                         .padding()
                         .foregroundColor(.white)
-                        .background(Color.blue)
+                        .background(isFormValid ? Color.blue : Color.gray)
                         .cornerRadius(12)
+                        .disabled(!isFormValid)
                     }
                     .padding()
                     .background(Color(UIColor.secondarySystemBackground))
@@ -79,6 +94,23 @@ struct RegisterView: View {
             } message: {
                 Text(errorMessage)
             }
+        }
+    }
+
+    private func isValidEmail(_ email: String) -> Bool {
+        let pattern = #"^\S+@\S+\.\S+$"#
+        return email.range(of: pattern, options: .regularExpression) != nil
+    }
+
+    private func validationMessage() -> String {
+        if email.isEmpty || username.isEmpty || password.isEmpty || licenseNumber.isEmpty {
+            return "Please fill in all required fields."
+        } else if !isValidEmail(email) {
+            return "Please enter a valid email address."
+        } else if password.count < 6 {
+            return "Password must be at least 6 characters long."
+        } else {
+            return "Unknown validation error."
         }
     }
 }

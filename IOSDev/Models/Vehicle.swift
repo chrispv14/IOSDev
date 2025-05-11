@@ -2,7 +2,7 @@ import Foundation
 import MapKit
 
 struct Vehicle: Identifiable, Codable, Equatable {
-    var id = UUID()
+    var id: String
     let brand: String
     let model: String
     let latitude: Double
@@ -12,6 +12,7 @@ struct Vehicle: Identifiable, Codable, Equatable {
     var coordinate: CLLocationCoordinate2D {
         CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
     }
+
     var imageName: String {
         switch model {
         case "Corolla": return "Corolla"
@@ -23,6 +24,4 @@ struct Vehicle: Identifiable, Codable, Equatable {
         default: return "CarDefault"
         }
     }
-
-
 }

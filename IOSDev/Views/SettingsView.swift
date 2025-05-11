@@ -1,4 +1,5 @@
 import SwiftUI
+import Foundation
 
 struct SettingsView: View {
     @AppStorage("username") private var username = ""
@@ -33,9 +34,7 @@ struct SettingsView: View {
                             showDeleteConfirmation = true
                         }
                         .foregroundColor(.red)
-                    }
 
-                    Section {
                         Button("Log Out") {
                             isLoggedIn = false
                             currentUserEmail = ""
