@@ -1,4 +1,5 @@
 import SwiftUI
+import MapKit
 
 struct MyBookingsView: View {
     @EnvironmentObject var bookingStore: BookingStore
@@ -34,11 +35,22 @@ struct MyBookingsView: View {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text("\(booking.vehicle.brand) \(booking.vehicle.model)")
                                     .font(.headline)
+
                                 Text("Pickup: \(booking.pickupDate.formatted(date: .abbreviated, time: .shortened))")
-
-
                                 Text("Return: \(booking.returnDate.formatted(date: .abbreviated, time: .shortened))")
+                            }
 
+                            Spacer()
+
+                            // ⬇️ Menu for additional actions
+                            Menu {
+                                Button("View in Apple Maps") {
+                                    openInMaps(lat: booking.vehicle.latitude, lon: booking.vehicle.longitude, name: booking.vehicle.model)
+                                }
+                            } label: {
+                                Image(systemName: "ellipsis")
+                                    .font(.title3)
+                                    .padding(.horizontal, 4)
                             }
                         }
                         .padding(.vertical, 4)
@@ -50,5 +62,15 @@ struct MyBookingsView: View {
                 .navigationTitle("My Bookings")
             }
         }
+    }
+
+    private func openInMaps(lat: Double, lon: Double, name: String) {
+        let coordinate = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+        let placemark = MKPlacemark(coordinate: coordinate)
+        let mapItem = MKMapItem(placemark: placemark)
+        mapItem.name = name
+        mapItem.openInMaps(launchOptions: [
+            MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeDriving
+        ])
     }
 }
