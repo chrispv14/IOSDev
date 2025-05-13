@@ -76,4 +76,9 @@ class UserStore: ObservableObject {
     func login(email: String, password: String) -> Bool {
         return users.contains(where: { $0.email == email && $0.password == password })
     }
+    func deleteUser(email: String) {
+        users.removeAll { $0.email == email }
+        saveUsers()
+    }
+
 }
